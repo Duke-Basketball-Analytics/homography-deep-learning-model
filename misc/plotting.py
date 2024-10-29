@@ -31,19 +31,19 @@ def plt_plot(img, save_path=None, title=None, cmap='viridis', additional_points=
         plt.show()
     plt.close(fig)
 
-def player_tracking_plots(players:dict, image):
-    color = 5
-    for player in players:
-        try:
-            cv2.circle(map_2d, (p.positions[timestamp]), 5, p.color, 3)
-            cv2.circle(map_2d, (p.positions[timestamp]), 7, (0, 0, 0), 1)
-            cv2.circle(map_2d_text, (p.positions[timestamp]), 13, p.color, -1)
-            cv2.circle(map_2d_text, (p.positions[timestamp]), 15, (0, 0, 0), 3)
-            text_size, _ = cv2.getTextSize(str(p.ID), cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
-            text_origin = (p.positions[timestamp][0] - text_size[0] // 2,
-                            p.positions[timestamp][1] + text_size[1] // 2)
-            cv2.putText(map_2d_text, str(p.ID), text_origin,
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.75,
-                        (0, 0, 0), 2, cv2.LINE_AA)
-        except KeyError:
-            pass
+# def player_tracking_plots(players:dict, image):
+#     color = 5
+#     for player in players:
+#         try:
+#             cv2.circle(map_2d, (p.positions[timestamp]), 5, p.color, 3)
+#             cv2.circle(map_2d, (p.positions[timestamp]), 7, (0, 0, 0), 1)
+#             cv2.circle(map_2d_text, (p.positions[timestamp]), 13, p.color, -1)
+#             cv2.circle(map_2d_text, (p.positions[timestamp]), 15, (0, 0, 0), 3)
+#             text_size, _ = cv2.getTextSize(str(p.ID), cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
+#             text_origin = (p.positions[timestamp][0] - text_size[0] // 2,
+#                             p.positions[timestamp][1] + text_size[1] // 2)
+#             cv2.putText(map_2d_text, str(p.ID), text_origin,
+#                         cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+#                         (0, 0, 0), 2, cv2.LINE_AA)
+#         except KeyError:
+#             pass
