@@ -2,8 +2,9 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import ipdb
-from plotting import *
-from resize_frame import resize_img
+from ..video_processing.frame_extraction import extract_frames
+from ..plotting import plt_plot
+from ..resize_frame import resize_img
 from .overlay import overlay_mask
 
 def isolate_court(frame, video_id, frame_num):
