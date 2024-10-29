@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from misc.resize_frame import resize_img
+from ..misc.resize_frame import resize_img
 
 def overlay_mask(frame, court_mask, plot=True, ret_img = False):
     # Create blended mask of court
