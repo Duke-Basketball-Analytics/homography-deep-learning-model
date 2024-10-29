@@ -28,7 +28,7 @@ def upload_file_to_drive(file_path, folder_id):
     
 if __name__ == "__main__":
     # Set the file path and folder ID
-    file_path = '../homography/2d_map.png'  # Replace with your file path
+    file_path = '../2d_map.png'  # Replace with your file path
     folder_id = '1isFq36BjzGrfpKj-49bAEbZDMd8SH5CM'  # Replace with your Google Drive folder ID
     
     upload_file_to_drive(file_path, folder_id)
