@@ -90,8 +90,8 @@ def frame_cropper(frame, start_row:int, end_row:int):
 
 
 if __name__ == "__main__":
-    from court.evaluate_person import visualize_kpts
-    from plotting import plt_plot
+    from ..court_masking.evaluate_person import visualize_kpts
+    from ...utils.plotting import plt_plot
 
     M1 = np.load("homography/M1/OSU_M1.npy")
     #Ms = np.load("homography/Ms/scaling_matrix_022.npy")
