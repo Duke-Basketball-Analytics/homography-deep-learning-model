@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import ipdb
-from plotting import plt_plot
+from ...utils.plotting import plt_plot
 
 '''This file contains all the functions required to evaluate whether a player is standing on the court.'''
 

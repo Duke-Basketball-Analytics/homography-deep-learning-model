@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 import json
@@ -87,54 +88,72 @@ def frame_cropper(frame, start_row:int, end_row:int):
     frame_crop[start_row:end_row, :] = frame[start_row:end_row, :]
     return frame_crop
 
+def save_matrix(M: np.array, frame: int, video_id: str):
+    # Define the directory path for saving the matrix
+    directory = f"DL_homography_matrices/{video_id}/"
+
+    # Check if the directory exists; if not, create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Define the file path for saving the matrix
+    file_path = os.path.join(directory, f"Frame_{frame}.npy")
+
+    # Save the homography matrix
+    np.save(file_path, M)
+    print(f"Saved homography matrix to {file_path}")
+
 
 
 if __name__ == "__main__":
     from ..court_masking.evaluate_person import visualize_kpts
     from ...utils.plotting import plt_plot
 
-    M1 = np.load("homography/M1/OSU_M1.npy")
-    #Ms = np.load("homography/Ms/scaling_matrix_022.npy")
-    Ms = np.load("homography/Ms/OSU_Ms.npy")
-    pano = cv2.imread("homography/panoramics/OSU_pano.png")
+    M1 = np.load("homography_deep_learning_model/data_processing/homography/M1/OSU_M1.npy") # Matrix between reduced pano (for keypoint labeling) and aerial view
+    Ms = np.load("homography_deep_learning_model/data_processing/homography/Ms/OSU_Ms.npy") # Scaling matrix between full size pano and reduced size pano
+    pano = cv2.imread("homography_deep_learning_model/data_processing/homography/panoramics/OSU_pano.png")
     transformer = HomographyHandler(pano = pano, M1 = M1, Ms = Ms)
-    video = cv2.VideoCapture("OFFENSE-44.mov")
+
+    video_id = "OFFENSE-40_richmond"
+    video = cv2.VideoCapture(f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}.mov")
+    frame_num = 0
     ok, frame = video.read()
     if not ok:
         print("Unable to read frame")
         exit()
-    frame_crop = frame_cropper(frame, start_row=200, end_row=800)
+    frame_crop = frame_cropper(frame, start_row=200, end_row=800) # Hard Coded frame cropping - need to calculate cropping based on court detection
     frame_kp, frame_des = transformer.get_keypoints(frame_crop)
     M = transformer.get_homography(kp1 = frame_kp, des1 = frame_des)
+    save_matrix(M, frame_num, video_id)
 
     transformed_image = cv2.warpPerspective(frame, M, (pano.shape[1], pano.shape[0]))
     # cv2.imshow('Transformed Image', transformed_image)
     # cv2.imshow('Destination Image', pano)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    # plt_plot(transformed_image)
-    # plt_plot(pano)
+    plt_plot(transformed_image)
+    plt_plot(pano)
 
-    aerial_court = cv2.imread("homography/2d_map.png")
-    aerial_court = cv2.resize(aerial_court, (960,540))
-    mmpose = json.load(open('ohiost_44.json'))
-    mmpose_person = mmpose['frame_0000'][0][12]['keypoints']
-    left = mmpose_person[15]
-    right = mmpose_person[16]
-    posX = int(round((left[0] + right[0]) / 2))
-    posY = int(round((left[1] + right[1]) / 2))
-    location = transformer.location_transformation([posX, posY], M = M)
-    frame = visualize_kpts(image=frame, kpts=mmpose_person, person_id = 2, plot=False, ret_img=True) # Debugging: visualize individual people
-    cv2.circle(aerial_court, location[:2], 5, (0,0,255), 3)
-    # cv2.imshow('Location Mapped', aerial_court)
-    # cv2.imshow('mmpose person', frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    print([posX, posY])
-    print(location)
-    plt_plot(aerial_court)
-    plt_plot(frame)
-    print("Complete")
+    # aerial_court = cv2.imread("homography_deep_learning_model/data_processing/homography/2d_map.png")
+    # aerial_court = cv2.resize(aerial_court, (960,540))
+    # mmpose = json.load(open('ohiost_44.json'))
+    # mmpose_person = mmpose['frame_0000'][0][12]['keypoints']
+    # left = mmpose_person[15]
+    # right = mmpose_person[16]
+    # posX = int(round((left[0] + right[0]) / 2))
+    # posY = int(round((left[1] + right[1]) / 2))
+    # location = transformer.location_transformation([posX, posY], M = M)
+    # frame = visualize_kpts(image=frame, kpts=mmpose_person, person_id = 2, plot=False, ret_img=True) # Debugging: visualize individual people
+    # cv2.circle(aerial_court, location[:2], 5, (0,0,255), 3)
+    # # cv2.imshow('Location Mapped', aerial_court)
+    # # cv2.imshow('mmpose person', frame)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # print([posX, posY])
+    # print(location)
+    # plt_plot(aerial_court)
+    # plt_plot(frame)
+    # print("Complete")
 
 
         

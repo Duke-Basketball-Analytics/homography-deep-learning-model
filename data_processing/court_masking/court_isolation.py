@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import cv2
 import matplotlib.pyplot as plt
 import ipdb
@@ -127,6 +128,21 @@ def dilation(img, k = 3, iter = 1):
 
     return dilated_mask
 
+def save_mask(mask: np.array, frame: int, video_id: str):
+    # Define the directory path for saving the matrix
+    directory = f"DL_masks/{video_id}/"
+
+    # Check if the directory exists; if not, create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Define the file path for saving the matrix
+    file_path = os.path.join(directory, f"Frame_{frame}.npy")
+
+    # Save the homography matrix
+    np.save(file_path, mask)
+    print(f"Saved homography matrix to {file_path}")
+
 if __name__ == "__main__":
     video_id = "OFFENSE-40_richmond"
     frame_key = 0
@@ -135,5 +151,6 @@ if __name__ == "__main__":
     ret, frame = cap.read()
 
     court_mask = isolate_court(frame, video_id, frame_key)
+    save_mask(court_mask, frame_key, video_id)
     plt_plot(court_mask)
     
