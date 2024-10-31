@@ -3,7 +3,9 @@ import os
 
 def extract_frames(video_id, skip_frames=100):
     # Find game footage
-    video_path = f"DL_raw/{video_id}.mov"
+    # This should be changed to google drive or a better pipeline location, but for now the scripts are executed from the 
+    # homography_deep_learning_model module so I can't access the pipeline directories through relative paths
+    video_path = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}.mov" 
     if not os.path.exists(video_path):
         print("VIDEO NOT FOUND")
         return None

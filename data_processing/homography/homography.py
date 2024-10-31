@@ -106,8 +106,9 @@ def save_matrix(M: np.array, frame: int, video_id: str):
 
 
 if __name__ == "__main__":
-    from ..court_masking.evaluate_person import visualize_kpts
-    from ...utils.plotting import plt_plot
+    # Execute from homography_deep_learning_model/ module
+    from data_processing.court_masking.evaluate_person import visualize_kpts
+    from utils.plotting import plt_plot
 
     M1 = np.load("homography_deep_learning_model/data_processing/homography/M1/OSU_M1.npy") # Matrix between reduced pano (for keypoint labeling) and aerial view
     Ms = np.load("homography_deep_learning_model/data_processing/homography/Ms/OSU_Ms.npy") # Scaling matrix between full size pano and reduced size pano

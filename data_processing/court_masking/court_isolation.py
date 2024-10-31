@@ -3,9 +3,9 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import ipdb
-from ...utils.plotting import plt_plot
-from ...utils.resize_frame import resize_img
-from .overlay import overlay_mask
+from utils.plotting import plt_plot
+from utils.resize_frame import resize_img
+from data_processing.court_masking.overlay import overlay_mask
 
 def isolate_court(frame, video_id, frame_num):
     '''Return a binarized mask of just the court'''
@@ -130,7 +130,7 @@ def dilation(img, k = 3, iter = 1):
 
 def save_mask(mask: np.array, frame: int, video_id: str):
     # Define the directory path for saving the matrix
-    directory = f"DL_masks/{video_id}/"
+    directory = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_masks/{video_id}/"
 
     # Check if the directory exists; if not, create it
     if not os.path.exists(directory):
