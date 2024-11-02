@@ -130,7 +130,7 @@ def dilation(img, k = 3, iter = 1):
 
 def save_mask(mask: np.array, frame: int, video_id: str):
     # Define the directory path for saving the matrix
-    directory = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_masks/{video_id}/"
+    directory = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_masks/{video_id[:-4]}/"
 
     # Check if the directory exists; if not, create it
     if not os.path.exists(directory):
@@ -144,9 +144,9 @@ def save_mask(mask: np.array, frame: int, video_id: str):
     print(f"Saved homography matrix to {file_path}")
 
 if __name__ == "__main__":
-    video_id = "OFFENSE-40_richmond"
+    video_id = "OFFENSE-40_richmond.mov"
     frame_key = 0
-    video_path = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}.mov"
+    video_path = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}"
     cap = cv2.VideoCapture(video_path)
     ret, frame = cap.read()
 
