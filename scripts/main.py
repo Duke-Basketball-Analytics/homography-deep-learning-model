@@ -7,16 +7,19 @@ from utils.folder_search import list_folders
 from utils.file_shuttle import move
 from google_drive.data_upload import upload_file_to_drive
 import os
+import shutil
 
 
-def frame_processing(full_path, video_ids:list):
-    unprocessed_path = full_path + "/DL_raw/unprocessed"
-    processed_path = full_path + "/DL_raw/processed"
-    unprocessed_vids = list_folders(directory = unprocessed_path,
+def frame_processing(base_path):
+    unprocessed_dir = "/DL_raw/unprocessed/"
+    processed_dir= "/DL_raw/processed/"
+    unprocessed_vids = list_folders(directory = base_path + unprocessed_dir,
                                     param = "movie")
     for video_id in unprocessed_vids:
-        extract_frames(full_path = full_path, video_id = video_id[:-4], skip_frames=100)
-        move(file_name=video_id, prev_path=unprocessed_path, new_path=processed_path)
+        extract_frames(base_path = base_path, unprocessed_dir = unprocessed_dir, video_id = video_id, skip_frames=100)
+        prev_path = base_path + unprocessed_dir + video_id
+        new_path = base_path + processed_dir + video_id
+        shutil.move(prev_path, new_path) # move video to /processed folder 
     
     return
 
@@ -27,5 +30,5 @@ if __name__ == "__main__":
     # # Print the current path
     # print(f"Current working directory: {current_path}")
 
-    full_path = "/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography"
-    frame_processing(full_path = full_path, video_ids = ["OFFENSE-40_richmond"])
+    base_path = "/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography"
+    frame_processing(base_path=base_path)
