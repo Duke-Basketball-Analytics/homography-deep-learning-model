@@ -12,6 +12,8 @@ def isolate_court(frame, video_id, frame_num):
     gray_frame = binarize_erode_dilate(frame, plot=False)
     blob_frame, contours_court = blob_detection(gray_frame, plot=False)
     court_mask, contour_vertices = rectangularize_court(blob_frame.copy(), contours_court, title = f"{video_id}, Frame: {frame_num}", plot=False)
+    if contour_vertices is None:
+        return None
     court_mask = dilation(court_mask, iter = 5)
     #overlay_mask(frame, court_mask)
     return court_mask
@@ -147,10 +149,12 @@ if __name__ == "__main__":
     video_id = "OFFENSE-40_richmond.mov"
     frame_key = 0
     video_path = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}"
-    cap = cv2.VideoCapture(video_path)
-    ret, frame = cap.read()
+    # cap = cv2.VideoCapture(video_path)
+    # ret, frame = cap.read()
 
+    frame_path = "../DL_frames_aug/OFFENSE-40_richmond/Frame_0.jpg"
+    frame = cv2.imread(frame_path)
     court_mask = isolate_court(frame, video_id, frame_key)
-    save_mask(court_mask, frame_key, video_id)
+    # save_mask(court_mask, frame_key, video_id)
     plt_plot(court_mask)
     

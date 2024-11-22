@@ -54,7 +54,7 @@ def augmentation_processing(base_path, video_queue):
 
 
 def mask_processing(base_path, video_queue):
-    frame_path = "/DL_frames/"
+    frame_path = "/DL_frames_aug/"
     mask_path = "/DL_masks/"
     for video_id in video_queue:
         frame_count = 0
@@ -72,6 +72,9 @@ def mask_processing(base_path, video_queue):
             if frame is not None:
                 frame_key = frame_name.split('_')[1].split('.')[0]
                 court_mask = isolate_court(frame, video_id, frame_key)
+                if court_mask is None:
+                    print(f"Court Mask Not Saved {video_id} Frame {frame_key}")
+                    continue
                 save_mask(court_mask, frame_key, video_id)
             frame_count += 1
 
