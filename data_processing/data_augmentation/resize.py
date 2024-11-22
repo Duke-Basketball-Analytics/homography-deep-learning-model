@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+from utils.plotting import plt_plot
 
 def resize_image(input_path, frame_num, video_id, size):
     """
@@ -35,6 +36,41 @@ def resize_image(input_path, frame_num, video_id, size):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+import numpy as np
+from PIL import Image
+
+def resize_binary_mask(binary_mask, size):
+    """
+    Resizes a binary mask represented as a numpy array to the desired size.
+
+    Parameters:
+        binary_mask (np.ndarray): Input binary mask with shape (height, width).
+        size (tuple): Desired size as (width, height).
+
+    Returns:
+        np.ndarray: Resized binary mask as a numpy array with values 0 and 1.
+    """
+    try:
+        # Convert the numpy array to a PIL Image
+        pil_image = Image.fromarray(binary_mask.astype(np.uint8))
+        # Resize the image
+        resized_image = pil_image.resize(size, resample=Image.NEAREST)
+        # Convert back to numpy array and binarize (ensure 0 and 1 only)
+        resized_binary_mask = np.array(resized_image) // 255
+
+        return resized_binary_mask.astype(np.uint8)
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+
 if __name__ == "__main__":
-    resize_image("../DL_frames/OFFENSE-40_richmond/Frame_0.jpg", 
-                 "../DL_frames_aug/Frame_0.jpg", (224, 224))
+    # resize_image("../DL_frames/OFFENSE-40_richmond/Frame_0.jpg", 
+    #              "../DL_frames_aug/Frame_0.jpg", (224, 224))
+    mask = np.load("../DL_masks/OFFENSE-40_richmond/Frame_300.npy")
+    print(mask.shape)
+    resized = resize_binary_mask(mask, size = (224,224))
+    print(resized.shape)
+    plt_plot(mask)
+    plt_plot(resized)

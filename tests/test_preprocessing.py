@@ -3,4 +3,9 @@ def mask_dimensions():
     mask = np.load("../DL_masks/OFFENSE-40_richmond/Frame_300.npy")
     print(mask.shape)
 
-mask_dimensions()
+def h_matrix():
+    M = np.load("../DL_homography_matrices/OFFENSE-40_richmond/Frame_0.npy")
+    print(M.shape)
+    print(M)
+    
+h_matrix()

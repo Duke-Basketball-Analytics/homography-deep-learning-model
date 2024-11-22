@@ -3,9 +3,8 @@
 from data_processing.court_masking.court_isolation import *
 from data_processing.frame_extraction.frame_extraction import extract_frames
 from data_processing.homography.homography import HomographyHandler, save_matrix, frame_cropper
-from data_processing.data_augmentation.resize import resize_image
+from data_processing.data_augmentation.resize import resize_image, resize_binary_mask
 from utils.plotting import plt_plot
-from utils.resize_frame import resize_img
 from utils.folder_search import list_contents
 from google_drive.data_upload import upload_file_to_drive
 from utils.file_shuttle import is_png_file
@@ -28,7 +27,8 @@ def frame_processing(base_path, video_queue):
         extract_frames(base_path = base_path, unprocessed_dir = unprocessed_dir, video_id = video_id, skip_frames=100)
         prev_path = base_path + unprocessed_dir + video_id
         new_path = base_path + processed_dir + video_id
-        shutil.move(prev_path, new_path) # move video to /processed folder 
+        #shutil.move(prev_path, new_path) # move video to /processed folder 
+    
     return
 
 def augmentation_processing(base_path, video_queue):
@@ -54,7 +54,7 @@ def augmentation_processing(base_path, video_queue):
 
 
 def mask_processing(base_path, video_queue):
-    frame_path = "/DL_frames_aug/"
+    frame_path = "/DL_frames/"
     mask_path = "/DL_masks/"
     for video_id in video_queue:
         frame_count = 0
@@ -75,7 +75,8 @@ def mask_processing(base_path, video_queue):
                 if court_mask is None:
                     print(f"Court Mask Not Saved {video_id} Frame {frame_key}")
                     continue
-                save_mask(court_mask, frame_key, video_id)
+                resized_mask = resize_binary_mask(court_mask, size=(224,224))    
+                save_mask(resized_mask, frame_key, video_id)
             frame_count += 1
 
         print(f"Frames processed for video: {video_id}, {frame_count} frames.")

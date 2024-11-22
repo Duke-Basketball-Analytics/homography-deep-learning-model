@@ -12,6 +12,7 @@ def extract_frames(base_path, unprocessed_dir, video_id, skip_frames=100):
         return None
     cap = cv2.VideoCapture(video_path)
     frame_count = 0
+    frame_processed = 0
 
     # Define the directory path for saving the matrix
     directory = f"{base_path}/DL_frames/{video_id[:-4]}/"
@@ -26,8 +27,11 @@ def extract_frames(base_path, unprocessed_dir, video_id, skip_frames=100):
             frame_filename = os.path.join(directory, f'Frame_{frame_count}.jpg')
             cv2.imwrite(frame_filename, frame)
             print(f"{video_id}, Frame {frame_count} saved")
+            frame_processed += 1
         frame_count += 1
     cap.release()
+
+    print(f"Frames processed for video: {video_id}, {frame_processed} frames.")
 
 if __name__ == "__main__":
     video_id = "OFFENSE-40_richmond.mov"
