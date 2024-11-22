@@ -141,7 +141,7 @@ def save_mask(mask: np.array, frame: int, video_id: str):
 
     # Save the homography matrix
     np.save(file_path, mask)
-    print(f"Saved homography matrix to {file_path}")
+    print(f"{video_id}, Frame {frame} court mask saved")
 
 if __name__ == "__main__":
     video_id = "OFFENSE-40_richmond.mov"

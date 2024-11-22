@@ -90,7 +90,7 @@ def frame_cropper(frame, start_row:int, end_row:int):
 
 def save_matrix(M: np.array, frame: int, video_id: str):
     # Define the directory path for saving the matrix
-    directory = f"DL_homography_matrices/{video_id}/"
+    directory = f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_homography_matrices/{video_id[:-4]}/"
 
     # Check if the directory exists; if not, create it
     if not os.path.exists(directory):
@@ -101,7 +101,7 @@ def save_matrix(M: np.array, frame: int, video_id: str):
 
     # Save the homography matrix
     np.save(file_path, M)
-    print(f"Saved homography matrix to {file_path}")
+    print(f"{video_id}, Frame {frame} homography matrix saved")
 
 
 
@@ -110,13 +110,13 @@ if __name__ == "__main__":
     from data_processing.court_masking.evaluate_person import visualize_kpts
     from utils.plotting import plt_plot
 
-    M1 = np.load("homography_deep_learning_model/data_processing/homography/M1/OSU_M1.npy") # Matrix between reduced pano (for keypoint labeling) and aerial view
-    Ms = np.load("homography_deep_learning_model/data_processing/homography/Ms/OSU_Ms.npy") # Scaling matrix between full size pano and reduced size pano
-    pano = cv2.imread("homography_deep_learning_model/data_processing/homography/panoramics/OSU_pano.png")
+    M1 = np.load("./data_processing/homography/M1/OSU_M1.npy") # Matrix between reduced pano (for keypoint labeling) and aerial view
+    Ms = np.load("./data_processing/homography/Ms/OSU_Ms.npy") # Scaling matrix between full size pano and reduced size pano
+    pano = cv2.imread("./data_processing/homography/panoramics/OSU_pano.png")
     transformer = HomographyHandler(pano = pano, M1 = M1, Ms = Ms)
 
     video_id = "OFFENSE-40_richmond"
-    video = cv2.VideoCapture(f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/{video_id}.mov")
+    video = cv2.VideoCapture(f"/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography/DL_raw/unprocessed/{video_id}.mov")
     frame_num = 0
     ok, frame = video.read()
     if not ok:
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     frame_crop = frame_cropper(frame, start_row=200, end_row=800) # Hard Coded frame cropping - need to calculate cropping based on court detection
     frame_kp, frame_des = transformer.get_keypoints(frame_crop)
     M = transformer.get_homography(kp1 = frame_kp, des1 = frame_des)
-    save_matrix(M, frame_num, video_id)
+    #save_matrix(M, frame_num, video_id)
 
     transformed_image = cv2.warpPerspective(frame, M, (pano.shape[1], pano.shape[0]))
     # cv2.imshow('Transformed Image', transformed_image)
@@ -133,7 +133,11 @@ if __name__ == "__main__":
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     plt_plot(transformed_image)
-    plt_plot(pano)
+
+    f_norm = np.linalg.norm(M)
+    M2 = M/f_norm
+    transformed_image2 = cv2.warpPerspective(frame, M2, (pano.shape[1], pano.shape[0]))
+    plt_plot(transformed_image2)
 
     # aerial_court = cv2.imread("homography_deep_learning_model/data_processing/homography/2d_map.png")
     # aerial_court = cv2.resize(aerial_court, (960,540))

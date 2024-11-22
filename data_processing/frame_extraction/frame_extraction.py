@@ -25,7 +25,7 @@ def extract_frames(base_path, unprocessed_dir, video_id, skip_frames=100):
         if frame_count % skip_frames == 0:
             frame_filename = os.path.join(directory, f'Frame_{frame_count}.jpg')
             cv2.imwrite(frame_filename, frame)
-            print(f"Frame {frame_count} saved")
+            print(f"{video_id}, Frame {frame_count} saved")
         frame_count += 1
     cap.release()
 
