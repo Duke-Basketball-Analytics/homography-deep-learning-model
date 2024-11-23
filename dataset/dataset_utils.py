@@ -32,4 +32,5 @@ def split_data(frames_dir, matrices_dir, train_ratio=0.7, val_ratio=0.2, seed=42
         'val': videos[train_split:val_split],
         'test': videos[val_split:]
     }
+
     return splits
