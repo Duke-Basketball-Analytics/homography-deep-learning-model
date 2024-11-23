@@ -27,16 +27,16 @@ def frame_processing(base_path, video_queue):
         extract_frames(base_path = base_path, unprocessed_dir = unprocessed_dir, video_id = video_id, skip_frames=100)
         prev_path = base_path + unprocessed_dir + video_id
         new_path = base_path + processed_dir + video_id
-        #shutil.move(prev_path, new_path) # move video to /processed folder 
+        shutil.move(prev_path, new_path) # move video to /processed folder 
     
     return
 
 def augmentation_processing(base_path, video_queue):
-    frame_path = "/DL_frames/"
+    frame_dir = "/DL_frames/"
     mask_path = "/DL_masks/"
     for video_id in video_queue:
         frame_count = 0
-        directory = f"{base_path}{frame_path}{video_id[:-4]}/"
+        directory = f"{base_path}{frame_dir}{video_id[:-4]}/"
         if not os.path.exists(directory):
             print(f"Directory does not exist: {directory}")
             continue
@@ -54,11 +54,12 @@ def augmentation_processing(base_path, video_queue):
 
 
 def mask_processing(base_path, video_queue):
-    frame_path = "/DL_frames/"
+    frame_dir = "/DL_frames/"
     mask_path = "/DL_masks/"
+    no_court = []
     for video_id in video_queue:
         frame_count = 0
-        directory = f"{base_path}{frame_path}{video_id[:-4]}/"
+        directory = f"{base_path}{frame_dir}{video_id[:-4]}/"
         if not os.path.exists(directory):
             print(f"Directory does not exist: {directory}")
             continue
@@ -74,6 +75,7 @@ def mask_processing(base_path, video_queue):
                 court_mask = isolate_court(frame, video_id, frame_key)
                 if court_mask is None:
                     print(f"Court Mask Not Saved {video_id} Frame {frame_key}")
+                    delete_frame(base_path=base_path, video_id=video_id, frame_name=frame_name)
                     continue
                 resized_mask = resize_binary_mask(court_mask, size=(224,224))    
                 save_mask(resized_mask, frame_key, video_id)
@@ -82,14 +84,14 @@ def mask_processing(base_path, video_queue):
         print(f"Frames processed for video: {video_id}, {frame_count} frames.")
 
 def homography_processing(base_path, video_queue):
-    frame_path = "/DL_frames/"
+    frame_dir = "/DL_frames/"
     homography_path = "/DL_homography_matrices/"
     pano = cv2.imread("data_processing/homography/panoramics/OSU_pano.png")
     Ms = np.load("data_processing/homography/Ms/OSU_Ms.npy")
     M1 = np.load("data_processing/homography/M1/OSU_M1.npy")
     for video_id in video_queue:
         frame_count = 0
-        directory = f"{base_path}{frame_path}{video_id[:-4]}/" # directory where individual frames are saved
+        directory = f"{base_path}{frame_dir}{video_id[:-4]}/" # directory where individual frames are saved
         if not os.path.exists(directory):
             print(f"Directory does not exist: {directory}")
             continue
@@ -112,7 +114,17 @@ def homography_processing(base_path, video_queue):
             frame_count += 1
         print(f"Homography Matrices processed for video: {video_id}, {frame_count} frames.")
         
-            
+def delete_frame(base_path, video_id, frame_name):
+
+    dir_list = ["/DL_frames/", "/DL_frames_aug/"]
+    for dir in dir_list:
+        file_path = base_path + dir + video_id + "/" + frame_name
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"{file_path} has been deleted.")
+        else:
+            print(f"The file {file_path} does not exist.")
+
 
 
 if __name__ == "__main__":
@@ -133,3 +145,5 @@ if __name__ == "__main__":
         homography_processing(base_path=base_path, video_queue=video_queue)
     else:
         print("No videos in the video queue.")
+    
+
