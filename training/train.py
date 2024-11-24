@@ -1,10 +1,19 @@
 from dataset.dataset_utils import split_data
 from dataset.homography_dataset import HomographyDataset
 from torch.utils.data import DataLoader
+from homography_deep_learning_model.model.frobenius_loss import frobenius_constraint_loss
+from model.hyperparameters import HyperParams
+from model.loss import HomographyLoss
+from model.model import CNNModel
+import torch
+import torch.optim as optim
+
 import os
 
-def train():
+def train(dataloader, model, criterion, optimizer, device):
     """Train full epoch on entire training dataset"""
+    model.train()
+
 
 def evaluate():
     """Evaluate on entire validation dataset - per epoch"""
@@ -12,7 +21,7 @@ def evaluate():
 def test():
     """Run entire test dataset"""
 
-def training_pipeline():
+def training_pipeline(hparams=HyperParams()):
     """
     1. Train/Val/Test Split
     2. Create datasets
@@ -42,14 +51,34 @@ def training_pipeline():
     val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
+    # Initialize Loss Object
+    criterion = HomographyLoss(hparams)
 
+    # Initialize Model
+    model = CNNModel(hparams)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
 
-    # Training loop
-    for epoch in range(num_epochs):
-        # Regenerate points for the new epoch
-        dataset.reset_points()
+    # Initialize Optimizer
+    optimizer = optim.Adam(model.parameters(), lr=hparams.LR, weight_decay=hparams.WD, eps=1e-6)
 
-        # Iterate through DataLoader
-        for images, H_gt, points in dataloader:
+    # Initialize Loss Trackers
+    loss_tracking = []
+
+    for epoch in range(hparams.N_EPOCHS):
+        if epoch > 0:
+            criterion.update_lambda(loss_tracking[-1])
+            train_dataset.reset_points(seed = epoch)
+
+        for images, H_gt, points in train_loader:
             # Forward pass
             H_pred = model(images)
+
+            # Calculate Loss 
+            loss = criterion(H_pred, H_gt, points)
+            loss_tracking.append(loss)
+
+            # Backward pass and optimization
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
