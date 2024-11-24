@@ -9,7 +9,6 @@ matrices_dir = base_path + "/DL_homography_matrices"
 
 # Split data
 splits = split_data(frames_dir, matrices_dir, train_ratio=0.7, val_ratio=0.2)
-print(splits)
 
 # Create Datasets
 train_dataset = HomographyDataset(frames_dir, matrices_dir, splits['train'])
