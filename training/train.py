@@ -10,12 +10,13 @@ matrices_dir = base_path + "/DL_homography_matrices"
 # Split data
 splits = split_data(frames_dir, matrices_dir, train_ratio=0.7, val_ratio=0.2)
 print(splits)
+
 # Create Datasets
 train_dataset = HomographyDataset(frames_dir, matrices_dir, splits['train'])
 val_dataset = HomographyDataset(frames_dir, matrices_dir, splits['val'])
 test_dataset = HomographyDataset(frames_dir, matrices_dir, splits['test'])
-print(train_dataset.__len__())
-# # Create DataLoaders
-# train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-# val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
-# test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
+
+# Create DataLoaders
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
