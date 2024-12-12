@@ -18,6 +18,14 @@ def sample_evenly_spaced_points(mask, num_points, seed, grid_size=(12,12)):
 
     # Mask dimensions
     h, w = mask.shape
+
+    # Input validation
+    if not isinstance(mask, np.ndarray) or mask.ndim != 2:
+        raise ValueError("mask must be a 2D numpy array.")
+    if not isinstance(num_points, int) or num_points <= 0:
+        raise ValueError("num_points must be a positive integer.")
+    if not (isinstance(grid_size, tuple) and len(grid_size) == 2 and all(isinstance(x, int) and x > 0 for x in grid_size)):
+        raise ValueError("grid_size must be a tuple of two positive integers.")
     
     # Divide mask into grid cells
     rows, cols = grid_size
