@@ -6,7 +6,7 @@ class HyperParams:
         self.UNK_INDEX = 1
         self.PAD_TOKEN = '<pad>'
         self.UNK_TOKEN = '<unk>'
-        self.STOP_WORDS = set(stopwords.words('english'))
+        #self.STOP_WORDS = set(stopwords.words('english'))
         self.MAX_LENGTH = 256
         self.BATCH_SIZE = 96
         self.EMBEDDING_DIM = 1
