@@ -10,4 +10,4 @@ def h_matrix():
     print(M.shape)
     print(M)
     
-h_matrix()
+mask_dimensions()
