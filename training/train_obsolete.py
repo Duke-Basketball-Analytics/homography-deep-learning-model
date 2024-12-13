@@ -33,7 +33,7 @@ def training_pipeline(hparams=HyperParams()):
     """
 
     # Paths to data
-    base_path = "/Users/matth/OneDrive/Documents/DukeMIDS/DataPlus/Basketball/DL_homography"
+    base_path = os.path.dirname(os.path.abspath(__file__))
     frames_dir = os.path.join(base_path, "DL_frames_aug")
     matrices_dir = os.path.join(base_path, "DL_homography_matrices")
     mask_dir = os.path.join(base_path, "DL_masks")
@@ -67,7 +67,7 @@ def training_pipeline(hparams=HyperParams()):
 
     for epoch in range(hparams.N_EPOCHS):
         if epoch > 0:
-            train_dataset.reset_points(seed = epoch)
+            train_dataset.reset_points(seed = epoch) # data_loader queries the dataset dynamically - no need to reinitialize data loader
 
         for images, H_gt, points in train_loader:
             # Forward pass
