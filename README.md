@@ -3,7 +3,7 @@ This repository contains the code for training a deep learning model to predict 
 
 ### Data Pre-Processing Pipeline:
 
-The data pre-processing pipeline is governed by the [main_preprocessing.py]("https://github.com/Duke-Basketball-Analytics/homography-deep-learning-model/blob/main/data_processing/scripts/main_preprocessing.py") script found in the `data_processing/scripts/` directory. Video preprocessing consists of 4 steps:
+The data pre-processing pipeline is governed by the [main_preprocessing.py](https://github.com/Duke-Basketball-Analytics/homography-deep-learning-model/blob/main/data_processing/scripts/main_preprocessing.py) script found in the `data_processing/scripts/` directory. Video preprocessing consists of 4 steps:
 
 1. **Frame Extraction**: The frames are sampled from each video using a predefined frame sampling rate. This ensures there's sufficient movement of players and camera angle between observations used in training. 
 
