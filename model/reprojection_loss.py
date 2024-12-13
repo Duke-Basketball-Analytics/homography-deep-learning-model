@@ -17,6 +17,13 @@ class ReprojectionLoss(nn.Module):
         Returns:
             torch.Tensor: Reprojection error for the batch.
         """
+        if H_pred.ndim != 3 or H_pred.shape[1:] != (3, 3):
+            raise ValueError("H_pred must have shape [batch_size, 3, 3].")
+        if H_gt.ndim != 3 or H_gt.shape[1:] != (3, 3):
+            raise ValueError("H_gt must have shape [batch_size, 3, 3].")
+        if points.ndim != 3 or points.shape[2] != 3:
+            raise ValueError("points must have shape [batch_size, num_points, 3].")
+
         # Transform points using predicted and ground truth homographies
         pred_points = torch.bmm(points, H_pred.transpose(1, 2))  # [batch_size, N, 3]
         gt_points = torch.bmm(points, H_gt.transpose(1, 2))      # [batch_size, N, 3]

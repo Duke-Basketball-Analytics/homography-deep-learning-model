@@ -1,11 +1,11 @@
 import unittest
 import torch
-from your_module import ReprojectionLoss  # Replace 'your_module' with the actual module name
+from model.reprojection_loss import ReprojectionLoss
 
 class TestReprojectionLoss(unittest.TestCase):
 
     def setUp(self):
-        self.loss_fn = ReprojectionLoss()
+        self.reproj_loss_fn = ReprojectionLoss()
 
     def test_zero_loss_for_identity(self):
         """Test that the loss is zero when H_pred equals H_gt."""
@@ -20,7 +20,7 @@ class TestReprojectionLoss(unittest.TestCase):
             [[50, 50, 1], [100, 50, 1], [50, 100, 1], [100, 100, 1]]
         ], dtype=torch.float32)  # Homogeneous points of shape [batch_size, num_points, 3]
 
-        loss = self.loss_fn(H_pred, H_gt, points)
+        loss = self.reproj_loss_fn(H_pred, H_gt, points)
         self.assertAlmostEqual(loss.item(), 0.0, places=6)
 
     def test_nonzero_loss(self):
@@ -37,7 +37,7 @@ class TestReprojectionLoss(unittest.TestCase):
             [[0, 0, 1], [224, 0, 1], [0, 224, 1], [224, 224, 1]]
         ], dtype=torch.float32)  # Homogeneous points of shape [batch_size, num_points, 3]
 
-        loss = self.loss_fn(H_pred, H_gt, points)
+        loss = self.reproj_loss_fn(H_pred, H_gt, points)
         self.assertGreater(loss.item(), 0.0)
 
     def test_invalid_shapes(self):
@@ -50,8 +50,8 @@ class TestReprojectionLoss(unittest.TestCase):
 
         points_invalid = torch.tensor([[0, 0, 1], [1, 0, 1]], dtype=torch.float32)  # Missing batch dimension
 
-        with self.assertRaises(RuntimeError):
-            self.loss_fn(H_pred, H_gt, points_invalid)
+        with self.assertRaises(ValueError):
+            self.reproj_loss_fn(H_pred, H_gt, points_invalid)
 
     def test_batch_loss_computation(self):
         """Test loss computation for a batch of matrices and points."""
@@ -69,7 +69,7 @@ class TestReprojectionLoss(unittest.TestCase):
             [[50, 50, 1], [100, 50, 1], [50, 100, 1], [100, 100, 1]]
         ], dtype=torch.float32)  # Homogeneous points
 
-        loss = self.loss_fn(H_pred, H_gt, points)
+        loss = self.reproj_loss_fn(H_pred, H_gt, points)
         self.assertGreater(loss.item(), 0.0)
 
 if __name__ == "__main__":

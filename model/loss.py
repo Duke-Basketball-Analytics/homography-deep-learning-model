@@ -21,4 +21,4 @@ class HomographyLoss(nn.Module):
         return mse + self.lambda_reproj*reproj + frobenius
 
     def update_lambda(self, curr_loss):
-        self.lambda_reproj = self.reprojection_scheduler.update_lambda(curr_loss)
+        self.lambda_reproj = self.reprojection_scheduler.update_lambda(curr_loss) # Use current loss to calculate weight of reprojection loss component
