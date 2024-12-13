@@ -6,6 +6,7 @@ import torch
 from point_selection import sample_evenly_spaced_points
 
 class HomographyDataset(torch.utils.data.Dataset):
+    """This is the dataset class used for training/validation/test"""
     def __init__(self, frames_dir, matrices_dir, mask_dir, video_list, transform=None, num_points=25, grid_size=(12,12)):
         self.frames_dir = frames_dir
         self.matrices_dir = matrices_dir

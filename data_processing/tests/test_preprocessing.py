@@ -5,9 +5,9 @@ def mask_dimensions():
     print(mask.shape)
 
 def h_matrix():
-    M = np.load("../DL_homography_matrices/OFFENSE-40_richmond/Frame_0.npy")
+    M = np.load("../DL_homography_matrices/OFFENSE-4/Frame_300.npy")
     assert M.shape == (3,3)
     print(M.shape)
     print(M)
     
-mask_dimensions()
+h_matrix()
