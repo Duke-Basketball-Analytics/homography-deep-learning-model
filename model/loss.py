@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-from reprojection_loss import ReprojectionLoss
-from frobenius_loss import FrobeniusConstraintLoss
-from reprojection_weighting import AdaptiveLossWeighting
-from MSE_loss import MSELoss
+from .reprojection_loss import ReprojectionLoss
+from .frobenius_loss import FrobeniusConstraintLoss
+from .reprojection_weighting import AdaptiveLossWeighting
+from .MSE_loss import MSELoss
 
 class HomographyLoss(nn.Module):
     def __init__(self, hparams):
@@ -12,7 +12,7 @@ class HomographyLoss(nn.Module):
         self.reprojection_loss = ReprojectionLoss()
         self.frobenius_loss = FrobeniusConstraintLoss(beta = hparams.BETA)
         self.reprojection_scheduler = AdaptiveLossWeighting()
-        self.lambda_reproj = 0
+        self.lambda_reproj = 1/224 #static until loss-based reprojection weighting is resolved - normalized to image resolution
 
     def forward(self, H_pred, H_gt, points):
         mse = self.mse_loss(H_pred, H_gt)
@@ -21,4 +21,5 @@ class HomographyLoss(nn.Module):
         return mse + self.lambda_reproj*reproj + frobenius
 
     def update_lambda(self, curr_loss):
+        """UNDER DEVELOPMENT"""
         self.lambda_reproj = self.reprojection_scheduler.update_lambda(curr_loss) # Use current loss to calculate weight of reprojection loss component

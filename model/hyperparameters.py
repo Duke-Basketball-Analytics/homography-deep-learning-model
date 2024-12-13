@@ -19,3 +19,4 @@ class HyperParams:
         self.WD = 0
         self.SEED = 12
         self.BIDIRECTIONAL = False
+        self.BETA = 0.1
