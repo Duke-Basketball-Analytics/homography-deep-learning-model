@@ -1,7 +1,7 @@
 import os
 import random
 
-def split_data(frames_dir, train_ratio=0.7, val_ratio=0.2, seed=42):
+def split_data(frames_dir, matrices_dir, train_ratio=0.7, val_ratio=0.2, seed=42):
     """
     Splits videos into Train, Validation, and Test datasets.
 

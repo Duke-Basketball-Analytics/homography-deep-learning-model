@@ -1,7 +1,6 @@
 from dataset.dataset_utils import split_data
 from dataset.homography_dataset import HomographyDataset
 from torch.utils.data import DataLoader
-from homography_deep_learning_model.model.frobenius_loss import frobenius_constraint_loss
 from model.hyperparameters import HyperParams
 from model.loss import HomographyLoss
 from model.model import CNNModel
@@ -12,35 +11,40 @@ import torch
 from torch.utils.data import DataLoader
 
 class HomographyTrainer:
-    def __init__(self, hparams, dataset_cls, model_cls, criterion_cls, base_path):
+    def __init__(self):
         """
         Initialize the trainer with hyperparameters, dataset class, model, and other components.
         """
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.hparams = hparams
-        self.base_path = base_path
+        self.hparams = HyperParams()
+        self.base_path = os.path.dirname(os.path.abspath(__file__))
         
         # Initialize paths
-        self.frames_dir = f"{self.base_path}/DL_frames_aug"
-        self.matrices_dir = f"{self.base_path}/DL_homography_matrices"
-        self.mask_dir = f"{self.base_path}/DL_masks"
+        self.frames_dir = os.path.abspath(os.path.join(self.base_path, 'DL_frames_aug'))
+        self.matrices_dir = os.path.abspath(os.path.join(self.base_path, 'DL_homography_matrices'))
+        self.mask_dir = os.path.abspath(os.path.join(self.base_path, 'DL_masks'))
         
         # Split data
         splits = self._split_data()  # Encapsulate data splitting logic
-        
-        # Initialize datasets and dataloaders
-        self.train_loader = self._create_dataloader(dataset_cls, splits['train'], shuffle=True)
-        self.val_loader = self._create_dataloader(dataset_cls, splits['val'], shuffle=False)
-        self.test_loader = self._create_dataloader(dataset_cls, splits['test'], shuffle=False)
+
+        # Create datasets
+        self.train_dataset = self._create_dataset(splits['train'])
+        self.val_dataset = self._create_dataset(splits['val'])
+        self.test_dataset = self._create_dataset(splits['test'])
+
+        # Create data loaders
+        self.train_loader = self._create_dataloader(self.train_dataset, shuffle=True)
+        self.val_loader = self._create_dataloader(self.val_dataset, shuffle=False)
+        self.test_loader = self._create_dataloader(self.test_dataset, shuffle=False)
         
         # Initialize model
-        self.model = model_cls(hparams).to(self.device)
+        self.model = CNNModel(self.hparams).to(self.device)
         
         # Initialize loss and optimizer
-        self.criterion = criterion_cls(hparams)
+        self.criterion = HomographyLoss(self.hparams)
         self.optimizer = torch.optim.Adam(self.model.parameters(), 
-                                          lr=hparams.LR, 
-                                          weight_decay=hparams.WD)
+                                          lr=self.hparams.LR, 
+                                          weight_decay=self.hparams.WD)
     
     def _split_data(self):
         """
@@ -48,12 +52,18 @@ class HomographyTrainer:
         """
         return split_data(self.frames_dir, self.matrices_dir, 
                           train_ratio=0.7, val_ratio=0.2)
+    
+    def _create_dataset(self, split):
+        """
+        Helper function to create a Homography Dataset.
+        """
+        return HomographyDataset(self.frames_dir, self.matrices_dir, self.mask_dir, split)
 
-    def _create_dataloader(self, dataset_cls, split, shuffle):
+    def _create_dataloader(self, dataset, shuffle):
         """
         Helper function to create a DataLoader for a given dataset.
         """
-        dataset = dataset_cls(self.frames_dir, self.matrices_dir, self.mask_dir, split)
+
         return DataLoader(dataset, batch_size=self.hparams.BATCH_SIZE, shuffle=shuffle)
 
     def train_one_epoch(self):
@@ -94,6 +104,7 @@ class HomographyTrainer:
         """
         best_val_loss = float('inf')
         for epoch in range(self.hparams.N_EPOCHS):
+            self.train_dataset.reset_seed(seed=epoch)
             train_loss = self.train_one_epoch()
             val_loss = self.evaluate(self.val_loader)
 

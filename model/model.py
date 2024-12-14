@@ -36,10 +36,10 @@ class CNNModel(nn.Module):
             nn.Linear(512, 128),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(128, 8)                                     # Output: 8 parameters for 2x3 homography matrix
+            nn.Linear(128, 9)                                     # Output: 8 parameters for 2x3 homography matrix
         )
 
     def forward(self, x):
         x = self.feature_extractor(x)
         x = self.fc(x)
-        return x.view(-1, 8)  # Reshape to (batch_size, 8)
+        return x.view(-1, 3, 3)  # Reshape to (batch_size, 8)
