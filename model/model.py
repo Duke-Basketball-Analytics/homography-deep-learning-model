@@ -42,4 +42,4 @@ class CNNModel(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = self.fc(x)
-        return x.view(-1, 9)  # Reshape to (batch_size, 8)
+        return x.view(-1, 3, 3)  # Reshape to (batch_size, 8)
