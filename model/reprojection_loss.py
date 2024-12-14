@@ -36,4 +36,27 @@ class ReprojectionLoss(nn.Module):
         error = torch.sqrt(torch.sum((pred_points[:, :, :2] - gt_points[:, :, :2]) ** 2, dim=-1))  # [batch_size, N]
 
         # Average reprojection error across all points in the batch
-        return torch.mean(error)
+        return self.reprojection_weighting(torch.mean(error))
+    
+    def reprojection_weighting(self, reproj_loss):
+        """
+        Inverse exponential decay function.
+        Maps the reprojection loss into a scaling factor between 0 and 1.
+
+        f(x) = (B - A) * (1 - exp(-k * x)) + A
+
+        where:
+        x: average reprojection error (reproj_loss)
+        A: Intercept (x=0, y=0.003)
+        B: Upper Bound Asymptote (y=1)
+        k: Rate of Increase parameter
+
+        Parameter k was calculated so that f(2240) = 0.997
+
+        x = 2240 represents an average reprojection error of 10x the image coordinate system (224x224)
+        At this point, we use the 3 standard deviation percentage to ensure the effects of reprojection error are felt.
+        """
+        A = 0.003
+        B = 1.0
+        k = 0.0025920261
+        return torch.tensor((B - A) * (1 - torch.exp(-k * reproj_loss)) + A)
