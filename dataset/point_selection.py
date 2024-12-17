@@ -17,6 +17,7 @@ def sample_evenly_spaced_points(mask, num_points, seed, grid_size=(12,12)):
     np.random.seed(seed)
 
     # Mask dimensions
+    # Mask shape has to be 2 dimensions
     h, w = mask.shape
 
     # Input validation
